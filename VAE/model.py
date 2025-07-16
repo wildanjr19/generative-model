@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 
 # Flow Utama
-# Input gambar -> Hidden dim -> mean, std -> Reparameterization trick -> Decoder -> Output gambar
+# Input gambar -> Hidden dim -> mean, std -> Reparameterization trick -> latent -> hidden -> Output gambar
+# ------------|---------------------encoder---------------------------|-------decoder--------|-------------
 
 class VariationalAutoencoder(nn.Module):
     def __init__(self, input_dim, hid_dim = 200, z_dim = 100):
@@ -22,7 +23,8 @@ class VariationalAutoencoder(nn.Module):
 
     def encode(self, x):
         hid = self.relu(self.img_to_hid(x))
-        mu, sigma = self.hid_to_mu(hid), self.hid_to_sigma(hid)
+        mu  = self.hid_to_mu(hid) 
+        sigma = self.hid_to_sigma(hid)
         return mu, sigma
 
     def decode(self, z):
@@ -31,8 +33,8 @@ class VariationalAutoencoder(nn.Module):
     
     def forward(self, x):
         mu, sigma = self.encode(x)
-        epsilon = torch.randn_like(sigma)                       # untuk reparameterization trick
-        z_reparametrized = mu + sigma * epsilon
+        epsilon = torch.randn_like(sigma)                       # buat noise
+        z_reparametrized = mu + sigma * epsilon                 # reparameterization trick
         x_reconstricted = self.decode(z_reparametrized)         # hasil rekontruksi gambar
         return x_reconstricted, mu, sigma
     
