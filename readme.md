@@ -2,6 +2,7 @@
 - Autoencoder
 - CNN Autoencoder
 - VAE
+- VQ-VAE
 
 
 #### Running on :
