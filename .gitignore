@@ -1,0 +1,21 @@
+# Abaikan semua folder bernama 'data' di semua level
+data/
+**/data/
+
+# Abaikan file cache Python
+__pycache__/
+
+# Abaikan file output atau file sementara
+output/
+*.pyc
+*.pyo
+*.pyd
+
+# Abaikan file model yang mungkin besar
+*.h5
+*.pth
+*.pkl
+*.pt
+
+# Abaikan file sistem
+*.DS_Store
