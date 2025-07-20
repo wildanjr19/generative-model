@@ -28,7 +28,7 @@ class DoubleConv(nn.Module):
             return F.gelu(x + self.double_conv(x))
         else:
             return self.double_conv(x)
-        
+        # output [batch_size, out_channels, height, width]
 
 # DownBlock -- DownSampling
 class Down(nn.Module):
@@ -60,9 +60,47 @@ class Down(nn.Module):
         emb = self.emb_layer(t)[:,:, None, None].repeat(1, 1, x.shape[-2], x.shape[-1]) # emb = [batch_size, out_channels, 1, 1] -> [batch_size, out_channels, height, width]
         # add element-wise
         return x + emb
-    
+        # output -> [batch_size, out_channels, height/2, width/2]
+
+# UpBlock -- UpSampling
+class Up(nn.Module):
+    """
+    Upsapling layer -- memperbesar/merekonstruksi ukuran gambar
+    Flow : 
+        Input -> Upsample -> DoubleConv -> Output
+        return output + embedding
+    """
+    def __init__(self, in_channels, out_channels, emb_dim = 256):
+        super(Up, self).__init__()
+        self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.conv = nn.Sequential(
+            DoubleConv(in_channels, in_channels, residual=True),
+            DoubleConv(in_channels, out_channels, in_channels // 2)
+        )
+
+        self.emb_layer = nn.Sequential(
+            nn.SiLU(),
+            nn.Linear(emb_dim, out_channels)
+        )
+
+    def forward(self, x, skip_x, t):
+        # upsample (dikali 2)
+        x = self.up(x) # [batch_size, in_channels, height * 2, width * 2]
+        # gabungkan dengan hasil dari encoder(downsampling) pada dimensi channel
+        x = torch.cat([skip_x, x], dim=1)
+        # lewatkan ke double conv
+        x = self.conv(x) # [batch_size, out_channels, height * 2, width * 2]
+        # embedding dari waktu (t)
+        emb = self.emb_layer(t)[:, :, None, None].repeat(1, 1, x.shape[-2], x.shape[-1]) # emb = [batch_size, out_channels, 1, 1] -> [batch_size, out_channels, height * 2, width * 2]
+        return x + emb
+        # output -> [batch_size, out_channels, height * 2, width * 2]
+
 # attention block
 class SelfAttention(nn.Module):
+    """
+    Flow :
+        Input (noisy) -> Down -> SelfAttention -> Up -> Output
+    """
     def __init__(self, channels, size):
         super(SelfAttention, self).__init__()
         self.channels = channels
@@ -89,3 +127,5 @@ class SelfAttention(nn.Module):
         attention_value = self.ff_self(attention_value) + attention_value
         # ubah kembali bentuknya
         return attention_value.swapaxes(2, 1).view(-1, self.channels, self.size, self.size)
+    
+# UNet Block
