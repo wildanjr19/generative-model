@@ -52,7 +52,7 @@ class DiffusionModel:
     def sample_timesteps(self, n):
         return torch.randint(low=1, high=self.noise_steps, size=(n,))
     
-    # Alghortm 2 -- Sampling
+    # Alghoritm 2 Sampling
     def sample(self, model, n):
         logging.info("Sampling {n} gambar baru...")
         
@@ -65,6 +65,7 @@ class DiffusionModel:
             # looping mundur -- generasi gambar -- menghilangkan noise
             for i in tqdm(reversed(range(self.noise_steps)), position = 0):
                 t = (torch.ones(n) * i).long().to(self.device)
+                # prediksi noise pada input x pada waktu t
                 predicted_noise = model(x, t)
                 # parameter
                 alpha = self.alpha[t][:, None, None, None]
@@ -80,7 +81,9 @@ class DiffusionModel:
                 x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / torch.sqrt(1 - alpha_hat))) * predicted_noise + torch.sqrt(beta) * noise
         
         model.train()
-        x = (x.clamp(-1, 1) + 1) / 2 # batasi x [-1, 1], kemudian geser hasilnya  +1, bagi 2
+        # membatasi nilai x agar berada dalam rentang [0, 1]
+        # kemudian menambahkan + 1 dan membagi dengan 2
+        x = (x.clamp(-1, 1) + 1) / 2 
         # konversi ke pixel
         x = (x * 255).type(torch.uint8)
         
