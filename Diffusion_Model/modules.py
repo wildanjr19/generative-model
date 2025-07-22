@@ -6,14 +6,21 @@ import torch.nn.functional as F
 class DoubleConv(nn.Module):
     """
     Layer konvolusi pada umumnya, dan terdiri dari dua lapisan konvolusi disertai dengan GruopNorm
+    Args : 
+        - in_channels : jumlah channel input
+        - out_channels : jumlah channel output
+        - mid_channels : jumlah channel di layer tengah (default = out_channels)
+        - residual (bool): apakah menggunakan residual connection (default = False)
     """
     def __init__(self, in_channels, out_channels, mid_channels=None, residual = False):
         super(DoubleConv, self).__init__()
         self.residual = residual
-        if not mid_channels:                                # cek apakah nilai mid_channels diisi
+        # cek apakah nilai mid_channels diisi
+        # jika tidak, gunakan out_channels sebagai mid_channels
+        if not mid_channels:                                
             mid_channels = out_channels
 
-        # dua lyer konvolusi
+        # dua layer konvolusi
         self.double_conv = nn.Sequential(
             nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1, bias=False),
             nn.GroupNorm(1, mid_channels),
