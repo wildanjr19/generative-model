@@ -80,7 +80,12 @@ class Down(nn.Module):
 # UpBlock -- UpSampling
 class Up(nn.Module):
     """
-    Upsapling layer -- memperbesar/merekonstruksi ukuran gambar
+    Upsampling layer, untuk memperbesar ukuran gambar dan menggabungkan embedding waktu (t)
+    sebagai informasi temporal.
+    Args : 
+        - in_channels : jumlah channel input
+        - out_channels : jumlah channel output
+        - emb_dim : dimensi embedding untuk waktu (t) (default = 256)
     Flow : 
         Input -> Upsample -> DoubleConv -> Output
         return output + embedding
@@ -89,8 +94,8 @@ class Up(nn.Module):
         super(Up, self).__init__()
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         self.conv = nn.Sequential(
-            DoubleConv(in_channels, in_channels, residual=True),
-            DoubleConv(in_channels, out_channels, in_channels // 2)
+            DoubleConv(in_channels, in_channels, residual=True),                    # dengan residual
+            DoubleConv(in_channels, out_channels, in_channels // 2)                 # mengurangi jumlah channel
         )
 
         self.emb_layer = nn.Sequential(
