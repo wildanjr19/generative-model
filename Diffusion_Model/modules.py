@@ -40,13 +40,19 @@ class DoubleConv(nn.Module):
 # DownBlock -- DownSampling
 class Down(nn.Module):
     """
-    Downsampling layer -- mereduksi ukuran gambar
+    Downsampling layer, untuk mereduksi ukuran gambar dan menggabungkan embedding waktu (t)
+    sebagai informasi temporal.
     timestep (t) diubah menjadi embedding dengan ukuran out_channels
+    Args : 
+        - in_channels : jumlah channel input
+        - out_channels : jumlah channel output
+        - emb_dim : dimensi embedding untuk waktu (t) (default = 256)
+
+        - maxpool_conv : mengurangi ukuran spasial gambar menjadi setengah
+        - emb_layer : mengubah timestep (t) menjadi embedding dengan ukuran out_channels
     Flow : 
-        Input -> Maxpool -> DoubleConv -> Output
+        Input -> Maxpool -> DoubleConv (2x) -> Output
         return output + embedding
-    Notes : 
-        - emb bukan nn.Embedding, tapi dari linear layer
     """
     def __init__(self, in_channels, out_channels, emb_dim = 256):
         super(Down, self).__init__()
@@ -58,12 +64,13 @@ class Down(nn.Module):
 
         self.emb_layer = nn.Sequential(
             nn.SiLU(),
-            # proyeksikan dimensi embedding waktu (t)
-            # ke jumlah channel output dari maxpool_conv
-            nn.Linear(emb_dim, out_channels)
+            # pryeksikan dengan linear layer
+            nn.Linear(emb_dim, out_channels) # output -> [batch_size, out_channels]
         )
 
-    def forward(self, x, t): # t = [batch_size, emb_dim], x = [batch_size, in_channels, height, width]
+    def forward(self, x, t):  
+        # x = [batch_size, in_channels, height, width]
+        # t = [batch_size, emb_dim],
         x = self.maxpool_conv(x)
         emb = self.emb_layer(t)[:,:, None, None].repeat(1, 1, x.shape[-2], x.shape[-1]) # emb = [batch_size, out_channels, 1, 1] -> [batch_size, out_channels, height, width]
         # add element-wise
