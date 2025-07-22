@@ -41,6 +41,7 @@ class DoubleConv(nn.Module):
 class Down(nn.Module):
     """
     Downsampling layer -- mereduksi ukuran gambar
+    timestep (t) diubah menjadi embedding dengan ukuran out_channels
     Flow : 
         Input -> Maxpool -> DoubleConv -> Output
         return output + embedding
@@ -50,8 +51,8 @@ class Down(nn.Module):
     def __init__(self, in_channels, out_channels, emb_dim = 256):
         super(Down, self).__init__()
         self.maxpool_conv = nn.Sequential(
-            nn.MaxPool2d(2),
-            DoubleConv(in_channels, in_channels, residual=True),
+            nn.MaxPool2d(2),                                        # ukuran dikurangi setengah
+            DoubleConv(in_channels, in_channels, residual=True),    # DoubleConv dengan residual
             DoubleConv(in_channels, out_channels)
         )
 
