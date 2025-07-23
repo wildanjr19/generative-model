@@ -1,6 +1,7 @@
 # Abaikan semua folder bernama 'data' di semua level
 data/
 **/data/
+Diffusion_Model/image_data/
 
 # Abaikan file cache Python
 __pycache__/
