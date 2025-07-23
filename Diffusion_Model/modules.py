@@ -126,7 +126,7 @@ class SelfAttention(nn.Module):
         self.channels = channels
         self.size = size
         self.mha = nn.MultiheadAttention(channels, num_heads=4, batch_first=True)
-        self.ln = nn.LayerNorm([channels])
+        self.ln = nn.LayerNorm([channels])                                          # Normalisasi di dimensi channels
         self.ff_self = nn.Sequential(
             nn.LayerNorm([channels]),
             nn.Linear(channels, channels),
