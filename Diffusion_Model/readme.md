@@ -2,6 +2,7 @@
 
 # Notes
 - DDPM (Denoising Diffusion Probabilistic Models)
+- /img : Diagram ilustration
 
 Source : 
 - [DDPM Paper](https://arxiv.org/pdf/2006.11239)
