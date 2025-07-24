@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
-import tqdm as tqdm
+from tqdm import tqdm
 from torch import optim
 from utils import *
 from modules import UNet
@@ -54,7 +54,7 @@ class DiffusionModel:
     
     # Alghoritm 2 Sampling
     def sample(self, model, n):
-        logging.info("Sampling {n} gambar baru...")
+        logging.info(f"Sampling {n} gambar baru...")
         
         # setting model to the eval mode
         model.eval()
@@ -72,13 +72,13 @@ class DiffusionModel:
                 alpha_hat = self.alpha_hat[t][:, None, None, None]
                 beta = self.beta[t][:, None, None, None]
 
-                if t > 1:
+                if i > 1:
                     noise = torch.randn_like(x)
                 else:
                     noise = torch.zeros_like(x)
 
                 # calculation x_t - 1
-                x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / torch.sqrt(1 - alpha_hat))) * predicted_noise + torch.sqrt(beta) * noise
+                x = (1 / torch.sqrt(alpha)) * (x - ((1 - alpha) / torch.sqrt(1 - alpha_hat)) * predicted_noise) + torch.sqrt(beta) * noise
         
         model.train()
         # membatasi nilai x agar berada dalam rentang [0, 1]
@@ -119,8 +119,8 @@ def train(args):
             logger.add_scalar("MSE", loss.item(), global_step=epoch * l + i)
 
         sampled_images = diffusion.sample(model, n=images.shape[0])
-        save_images(sampled_images, os.path.join("runs", args.run_name, f"{epoch}.jpg"))
-        torch.save(model.state_dict(), os.path.join("runs", args.run_name, f"ckpt.pt"))
+        save_images(sampled_images, os.path.join("results", args.run_name, f"{epoch}.jpg"))
+        torch.save(model.state_dict(), os.path.join("models", args.run_name, f"ckpt.pt"))
 
 
 def launch():
@@ -128,10 +128,13 @@ def launch():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     args.run_name = "DDPM_Uncondtional"
-    args.epochs = 10
-    args.batch_size = 32
+    args.epochs = 5
+    args.batch_size = 4
     args.image_size = 64
-    args.dataset_path = r"D:\Willy's Project\Project\Generative Model\Diffusion_Model\image_data"
+    args.dataset_path = r"C:\Users\LENOVO\Downloads\datasets\landscape_img_folder"
     args.device = "cuda"
     args.lr = 3e-4
     train(args)
+
+if __name__ == "__main__":
+    launch()
