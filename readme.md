@@ -3,6 +3,7 @@
 - CNN Autoencoder
 - VAE
 - VQ-VAE
+- Diffusion Model (Unconditional)
 
 
 #### Running on :
