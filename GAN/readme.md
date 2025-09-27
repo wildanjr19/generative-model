@@ -5,11 +5,13 @@ Tujuan model -> Mempelajari data latih untuk menghasilkan data baru semirip mung
 ## G - Generator
 - Dimulai dari random weights
 - Generator akan mempelajari data (gambar) dari data asli
+- Secara progresif akan membaik dalam mengenerasi data yang terlihat seperti asli
 - Generator mengambil noise acak atau vektor acak sebagai input dan menghasilkan sampel data
 
 ## D - Discriminator
 - Discriminator akan mengambil data asli dan hasil generasi dari generator
 - Discriminator akan mencoba mengklasifikasikan sampel sebagai asli atau palsu
+- Secara progresif discriminator juga akan baik dalam membedakan data asli dan hasil generator
 
 
 ## Training Loop
@@ -40,5 +42,10 @@ Tujuan model -> Mempelajari data latih untuk menghasilkan data baru semirip mung
 - Intuisi : Generator ingin $D(G(z))$ mendekati 1 (menipu discriminator)
 
 
+# Notes
+- GANs akan mencapai equilibrum atau seimbang ketika discriminator tidak dapat lagi membedakan dengan baik antara data asli dan hasil generator
+- Setelah melatih model GANs, kita hanya membutuhkan generator saja
+- Random Noise (pada generator) akan menjamin bahwa generator tidak selalu menghasilkan gambar yang serupa
 ## Sources
 - [An Introduction to Generative Adversarial Networks (GANs)](https://medium.com/aimonks/an-introduction-to-generative-adversarial-networks-gans-454d127640c1)
+- [A basic intro to GANs (Generative Adversarial Networks)](https://towardsdatascience.com/a-basic-intro-to-gans-generative-adversarial-networks-c62acbcefff3/)
