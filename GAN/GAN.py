@@ -52,6 +52,30 @@ class Generator(nn.Module):
     def forward(self, x):
         return self.gen(x)
     
-# CONFIGURATION
+## -- CONFIGURATION -- ## 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 lr = 0.0004
+z_dim = 64
+image_dim = 28 * 28 * 28 # 784
+batch_size = 32
+num_epochs = 50
+
+# inisialisasi dis dan gen
+disc = Discriminator(image_dim).to(device)
+gen = Generator(z_dim, image_dim).to(device)
+
+# inisialisasi noise random awal
+fixed_noise = torch.randn((batch_size, z_dim)) .to(device)
+
+# transformasi data
+transforms = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.1307,), (0.3081,))
+])
+
+## -- DATA -- ##
+dataset = datasets.MNIST(root="../GAN/dataset", transform=transforms, download=True)
+# data loader
+loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+# optimizers
