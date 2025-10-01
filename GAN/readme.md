@@ -41,6 +41,14 @@ Tujuan model -> Mempelajari data latih untuk menghasilkan data baru semirip mung
 - $$Loss(G) = -log(D(G(z)))$$
 - Intuisi : Generator ingin $D(G(z))$ mendekati 1 (menipu discriminator)
 
+## Nash Equilibrum
+- Secara umum Nash Equilibrum adalah konsep dalam teori permainan (game theory) yang menggambarkan keadaan dimana setiap pemain memilih strategi terbaiknya, dan tiap pemain tidak bisa mengubah strateginya secara sepihak.
+- Di GAN, dua jaringan bertujuan untuk bersaing: ketika satu jaringan menjadi lebih baik, jaringan lainnya kebalikannya.  
+
+GAN akan mencapai equilibrum ketika:
+- Generator memproduksi sampel palsu yang tidak bisa dibedakan dengan data asli dari dataset pelatihan
+- Discriminator paling banter bisa menebak secara acak apakah contoh tertentu
+nyata atau palsu
 
 # Notes
 - GANs akan mencapai equilibrum atau seimbang ketika discriminator tidak dapat lagi membedakan dengan baik antara data asli dan hasil generator
@@ -49,3 +57,4 @@ Tujuan model -> Mempelajari data latih untuk menghasilkan data baru semirip mung
 ## Sources
 - [An Introduction to Generative Adversarial Networks (GANs)](https://medium.com/aimonks/an-introduction-to-generative-adversarial-networks-gans-454d127640c1)
 - [A basic intro to GANs (Generative Adversarial Networks)](https://towardsdatascience.com/a-basic-intro-to-gans-generative-adversarial-networks-c62acbcefff3/)
+- GANs In Action
