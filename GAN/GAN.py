@@ -79,3 +79,67 @@ dataset = datasets.MNIST(root="../GAN/dataset", transform=transforms, download=T
 loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 # optimizers
+optimizer_discriminator = optim.Adam(disc.parameters(), lr=lr)
+optimizer_generator = optim.Adam(gen.parameters(), lr=lr)
+
+# loss function
+"""Loss function yang digunaka untuk GAN adalah BCE, karena BCE umum untuk binary classification."""
+criterion = nn.BCELoss()
+
+# logging dengan SummaryWriter
+writer_fake = SummaryWriter(f"../GAN/MNIST/fake")
+writer_real = SummaryWriter(f"../GAN/MNIST/real")
+step = 0
+
+## -- TRAINING -- ##
+"""
+[lihat bagian 'loss']
+
+Alghoritm
+- train discriminator
+- train generator
+
+    - 
+
+Kalkulasi Loss
+- loss disc real : hitung loss dari hasil disc real dengan tensor 1 (agar hasil mendekati 1 (asli))
+
+"""
+for epoch in range(num_epochs):
+    for batch_dx, (real, _) in enumerate(loader):
+        # flatten data (asli) dengan view
+        real = real.view(-1, 784).to(device)
+        # ambil ukuran batch
+        batch_size = real.shape[0]
+
+        # TRAIN DISCRIMINATOR
+        # buat noise dengan z_dim
+        noise = torch.randn(batch_size, z_dim).to(device)
+        # generate fake dari noise dengan generator
+        fake = gen(noise)
+
+        # dapatkan discriminator real
+        disc_real = disc(real).view(-1)
+        # hitung loss discriminator real
+        lossDisc_real = criterion(disc_real, torch.ones_like(disc_real))
+    for batch_dx, (real, _) in enumerate(loader):
+        # flatten data (asli) dengan view
+        real = real.view(-1, 784).to(device)
+        # ambil ukuran batch
+        batch_size = real.shape[0]
+
+        # TRAIN DISCRIMINATOR
+        # buat noise dengan z_dim
+        noise = torch.randn(batch_size, z_dim).to(device)
+        # generate fake dari noise dengan generator
+        fake = gen(noise)
+
+        # dapatkan discriminator real
+        disc_real = disc(real).view(-1)
+        # hitung loss discriminator real
+        lossDisc_real = criterion(disc_real, torch.ones_like(disc_real))
+
+        # dapatkan discriminator fake
+        disc_fake = disc(fake).view(-1)
+        # hitung loss discriminator fake
+        lossDisc_fake = criterion(disc_fake, torch.zeros_like(disc_fake))
