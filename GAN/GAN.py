@@ -56,9 +56,9 @@ class Generator(nn.Module):
 device = "cuda" if torch.cuda.is_available() else "cpu"
 lr = 0.0004
 z_dim = 64
-image_dim = 28 * 28 * 28 # 784
+image_dim = 28 * 28 # 784
 batch_size = 32
-num_epochs = 50
+num_epochs = 15
 
 # inisialisasi dis dan gen
 disc = Discriminator(image_dim).to(device)
@@ -106,7 +106,7 @@ Kalkulasi Loss
 
 """
 for epoch in range(num_epochs):
-    for batch_dx, (real, _) in enumerate(loader):
+    for batch_idx, (real, _) in enumerate(loader):
         # flatten data (asli) dengan view
         real = real.view(-1, 784).to(device)
         # ambil ukuran batch
@@ -138,3 +138,39 @@ for epoch in range(num_epochs):
 
 
         # TRAIN GENERATOR
+        # terima output dari discriminator (yang backpropnya sudah kita simpan)
+        output = disc(fake).view(-1)
+
+        # hitung loss generator
+        lossGen = criterion(output, torch.ones_like(output))
+
+        # backprop dan update
+        gen.zero_grad()
+        lossGen.backward()
+        optimizer_generator.step()
+
+
+        ## LOGGING
+        if batch_idx == 0:
+            print(
+                f"Epoch [{epoch}/{num_epochs}] Batch {batch_idx}/{len(loader)} \
+                    Loss D: {lossDisc:.4f}, Loss G: {lossGen:.4f}"
+            )
+
+            # eval mode
+            with torch.no_grad():
+                # generator hasilkan gambar palsu dari noise awal (fixed noise), kemudian reshape
+                fake = gen(fixed_noise).reshape(-1, 1, 28, 28)
+                # reshape data asli (real)
+                data = real.reshape(-1, 1, 28, 28)
+
+                # `make_grid` : menggabungkan beberapa gambar menjadi satu grid gambar besar
+                img_grid_fake = torchvision.utils.make_grid(fake, normalize=True)
+                img_grid_real = torchvision.utils.make_grid(data, normalize=True)
+
+                # write logging
+                writer_fake.add_image("Mnis Fake Images", img_grid_fake, global_step=step)
+                writer_real.add_image("Mnis Real Images", img_grid_real, global_step=step)
+                step += 1
+
+
