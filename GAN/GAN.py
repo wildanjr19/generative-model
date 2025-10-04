@@ -102,26 +102,10 @@ Alghoritm
     - 
 
 Kalkulasi Loss
-- loss disc real : hitung loss dari hasil disc real dengan tensor 1 (agar hasil mendekati 1 (asli))
+- loss disc real : hitung loss dari hasil disc real dengan tensor 1 (agar hasil mendekati 1 = asli)
 
 """
 for epoch in range(num_epochs):
-    for batch_dx, (real, _) in enumerate(loader):
-        # flatten data (asli) dengan view
-        real = real.view(-1, 784).to(device)
-        # ambil ukuran batch
-        batch_size = real.shape[0]
-
-        # TRAIN DISCRIMINATOR
-        # buat noise dengan z_dim
-        noise = torch.randn(batch_size, z_dim).to(device)
-        # generate fake dari noise dengan generator
-        fake = gen(noise)
-
-        # dapatkan discriminator real
-        disc_real = disc(real).view(-1)
-        # hitung loss discriminator real
-        lossDisc_real = criterion(disc_real, torch.ones_like(disc_real))
     for batch_dx, (real, _) in enumerate(loader):
         # flatten data (asli) dengan view
         real = real.view(-1, 784).to(device)
@@ -143,3 +127,14 @@ for epoch in range(num_epochs):
         disc_fake = disc(fake).view(-1)
         # hitung loss discriminator fake
         lossDisc_fake = criterion(disc_fake, torch.zeros_like(disc_fake))
+
+        # total loss discriminator (rata-rata)
+        lossDisc = (lossDisc_real + lossDisc_fake) / 2
+
+        # backprop dan update
+        disc.zero_grad()
+        lossDisc.backward(retain_graph=True)
+        optimizer_discriminator.step()
+
+
+        # TRAIN GENERATOR
