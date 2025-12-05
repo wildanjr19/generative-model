@@ -30,10 +30,10 @@ Tujuan model -> Mempelajari data latih untuk menghasilkan data baru semirip mung
 - Discriminator akan mengevaluasi keduanya (data asli dan data palsu)
 
 ## Loss
-- Kedua bagian dilatih dengan loss function yang bertentangan
+- Kedua bagian dilatih dengan intuisi loss yang berbeda dan bertentangan
 ### Discriminator
 - Memaksimalkan kemampuan membedakan data asli dan palsu
-- $$Loss(D) = -[(log(D(x))) + log(1 - D(G(z)))]$$
+- $$Max Loss(D) = -[(log(D(x))) + log(1 - D(G(z)))]$$
 - Intuisi : Discriminator ingin $D(x)$ mendekati 1 (benar) dan $D(G(z))$ mendekati 0 (salah)
 
 ### Generator
@@ -54,7 +54,11 @@ nyata atau palsu
 - GANs akan mencapai equilibrum atau seimbang ketika discriminator tidak dapat lagi membedakan dengan baik antara data asli dan hasil generator
 - Setelah melatih model GANs, kita hanya membutuhkan generator saja
 - Random Noise (pada generator) akan menjamin bahwa generator tidak selalu menghasilkan gambar yang serupa
+- Pada proses backward di Discriminator kita melakukan retain_graph (atau juga bisa di detach) agar graph komputasi yang dipakai untuk backward pass tidak dihapus setelah backward pertama. Ini diperlukan karena setelah update discriminator, kita akan melakukan backward lagi untuk generator menggunakan graph yang sama (yaitu graph dari fake image yang dihasilkan generator).  
+
+
 ## Sources
 - [An Introduction to Generative Adversarial Networks (GANs)](https://medium.com/aimonks/an-introduction-to-generative-adversarial-networks-gans-454d127640c1)
 - [A basic intro to GANs (Generative Adversarial Networks)](https://towardsdatascience.com/a-basic-intro-to-gans-generative-adversarial-networks-c62acbcefff3/)
+- [Building our first simple GAN](https://www.youtube.com/watch?v=OljTVUVzPpM&t=944s)
 - GANs In Action
