@@ -95,3 +95,14 @@ class Generator(nn.Module):
     # forward pass
     def forward(self, x):
         return self.gen(x)
+    
+# inisalisasi bobot (sesuai dengan paper DCGAN)
+def initialize_weights(model):
+    # inisialisasi bobot untuk setiap layer
+    """
+    mu = 0
+    sigma = 0.02
+    """
+    for m in model.modules():
+        if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d)):
+            nn.init.normal_(m.weight.data, 0.0, 0.02)
