@@ -1,4 +1,4 @@
-# CyleGAN (Cycle-Consistent Adversarial Net Work)
+# CyleGAN (Cycle-Consistent Adversarial Network)
 Model generatif yang dirancang untuk mentransformasi gambar dari satu domain ke domain lain tanpa memerlukan pasangan gambar selama pelatihan.
 CycleGAN merupakan perkembangan dari pix2pix yang memerlukan pasangan gambar. 
 ## Main Ideas
@@ -12,6 +12,11 @@ CycleGAN merupakan perkembangan dari pix2pix yang memerlukan pasangan gambar.
 - Begitu pula sebaliknya, transformasi gambar dari Y ke X (F(Y)), lalu ditransformasi kembali ke Y (G(F(Y))), maka $\hat{Y}$ harus mirip dengan gambar Y asli.
 - Cycle Consistency Loss memastikan bahwa transformasi dua arah ini konsisten dan tidak kehilangan informasi penting.
 ### Loss (Full)
-- $\mathcal{L}(G, F, D_X, D_Y) = \mathcal{L}_{GAN}(G, D_Y, X, Y) + \mathcal{L}_{GAN}(F, D_X, Y, X) + \lambda \mathcal{L}_{cyc}(G, F)$
+- $$\mathcal{L}(G, F, D_X, D_Y) = \mathcal{L}_{GAN}(G, D_Y, X, Y) + \mathcal{L}_{GAN}(F, D_X, Y, X) + \lambda \mathcal{L}_{cyc}(G, F)$$
 ## Notes
 - Defaultnya, CycleGAN dilatih hanya dengan dua domain saja
+- Jika menggunakan dataset gambar tidak berwarna dengan task mentransformasinya menjadi berwarna, dapat ditambah dengan identity loss.
+- Berbeda dengan GAN vanilla, dimana untuk mengukur performa (evaluasi) menggunakan matriks 0 1 (0 false, 1 true) yang nantinya akan diukur dengan BCE Loss. CycleGAN menggunakan PatchGAN, dimana matriksnya akan responds terhadap patch-patch di gambar asli (grid).
+## Experiment
+### Data
+Dilatih dengan data asli dari papaer CycleGAN
