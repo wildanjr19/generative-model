@@ -17,6 +17,8 @@ CycleGAN merupakan perkembangan dari pix2pix yang memerlukan pasangan gambar.
 - Defaultnya, CycleGAN dilatih hanya dengan dua domain saja
 - Jika menggunakan dataset gambar tidak berwarna dengan task mentransformasinya menjadi berwarna, dapat ditambah dengan identity loss.
 - Berbeda dengan GAN vanilla, dimana untuk mengukur performa (evaluasi) menggunakan matriks 0 1 (0 false, 1 true) yang nantinya akan diukur dengan BCE Loss. CycleGAN menggunakan PatchGAN, dimana matriksnya akan responds terhadap patch-patch di gambar asli (grid).
+- Alur penuh dari CycleGAN dapat dilihat [disini](./CycleGAN_flow.png). 
+- Training dan scaling (loss dan gradient) dengan AMP torch.
 ## Experiment
 ### Data
-Dilatih dengan data asli dari papaer CycleGAN
+Dilatih dengan data asli dari paper CycleGAN Horse-Zebra
