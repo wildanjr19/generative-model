@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from discriminator import Discriminator
 from generator import Generator
-from utils import load_checkpoint
+from utils import load_checkpoint, save_checkpoint
 
 # training function
 def train(disc_H, disc_Z, gen_H, gen_Z, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler):
@@ -169,3 +169,34 @@ def main():
         num_workers=1,
         pin_memory=True,
     )
+
+    # scaler 
+    g_scaler = torch.cuda.amp.GradScaler()
+    d_scaler = torch.cuda.amp.GradScaler()
+
+    # main loop
+    print("Start training")
+    for epoch in range(config.NUM_EPOCHS):
+        print(f"Epoch [{epoch+1}/{config.NUM_EPOCHS}]")
+        train(
+            disc_H,
+            disc_Z,
+            gen_H,
+            gen_Z,
+            train_loader,
+            opt_disc,
+            opt_gen,
+            l1,
+            mse,
+            d_scaler,
+            g_scaler,
+        )
+
+        if config.SAVE_MODEL:
+            save_checkpoint(gen_H, opt_gen, filename=config.CHECKPOINT_GEN_H)
+            save_checkpoint(gen_Z, opt_gen, filename=config.CHECKPOINT_GEN_Z)
+            save_checkpoint(disc_H, opt_disc, filename=config.CHECKPOINT_CRITIC_H) 
+            save_checkpoint(disc_Z, opt_disc, filename=config.CHECKPOINT_CRITIC_Z)
+
+if __name__ == "main":
+    main()
